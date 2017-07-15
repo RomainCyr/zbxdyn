@@ -36,11 +36,11 @@ LACP_groups:
 ```
 
 # Usage
-The zabbix hosts on which the script will be run need to be in a group which name is in the configuratino file. 
+The zabbix hosts on which the script will be run need to be in a group which name is in the configuration file. 
 
 For example, a LACP_DYN group can be created on the zabbix server and every host that need to be monitored will be in this group.
 
-There are several macro that are needed for this scrip to run. It is not mandatory to define them as default value are defined: 
+There are several macro that are needed for this script to run. It is not mandatory to define them as default values are defined: 
 * {$LACP_ITEM_DELAY}: the delay of the items created (60 by default)
 * {$PRIORITY_LACP_DOWN}: the priority of the trigger when the aggregation is down (5 by default)
 * {$PRIORITY_LACP_PARTIALLY_DOWN}: the priority of the trigger when the aggregation is partially down (2 by default)
