@@ -26,6 +26,7 @@ use constant{
 # Handle command line arguments
 my $configuration_file;
 my $help;
+my $create;
 my $version;
 my $debug;
 my $statistics;
@@ -34,6 +35,7 @@ GetOptions(
 	'help|h' => \$help,
 	'version|v' => \$version,
 	'p=s' => \$configuration_file,
+	'create-interface|c' => \$create,
 	's' => \$statistics,
 	'd' => \$debug
 )or die("Error in command line arguments\n");
@@ -45,10 +47,11 @@ if($version){
 
 if($help){
 	print
-	"Usage:\n\t$0 [-c <configuration_file>]\nOptions:
+	"Usage:\n\t$0 [-p <configuration_file>]\nOptions:
 	-h --help \t\tShow this Screen		
 	-v --version \tVersion of the scrip
 	-p \t\tPath to the configuration file
+	-c --create-interface\t\tCreate SNMP interface if noexistent
 	-s \t\tShow statistics per host
 	-d \t\tDebug mode\n";
 	exit 0;
@@ -87,7 +90,7 @@ for my $host (@$hosts_ref){
 	print "INFO Retrieving Zabbix macros for host $host->{name}\n" if($debug);
 	$host->retrieve_macros($zabbix);
 	print "INFO Retrieving Zabbix snmp interfaces for host $host->{name}\n" if($debug);
-	$host->retrieve_snmp_interface($zabbix);
+	$host->retrieve_snmp_interface($zabbix,$create);
 
 	my $snmp_community = $host->get_macro_by_name('{$SNMP_COMMUNITY}');
 	if(!defined($snmp_community)){
@@ -416,6 +419,10 @@ Display the version message
 =item path configuration file -p
 
 Path to the configuration file
+
+=item create -c --create-interface
+
+Create SNMP interface if noexistent
 
 =item statistics -s
 

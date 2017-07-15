@@ -22,6 +22,9 @@ The following modules are needed:
     -p
         Path to the configuration file
 
+    -c --create-interface
+        Create SNMP interface if noexistent
+
     -s
         Display the statistics per host
 
@@ -64,6 +67,8 @@ These macros can be defined globaly in Administration > General > Macro, or per 
 ## Ping dependencie
 If the host have a ping check configured (with the Zabbix icmpping function) it will be add as a dependencie for the created triggers. Otherwise no dependencie will be set.
 
+## SNMP interface
+If no SNMP interface is defined on the host you can create it from the agent interface using the option -c --create-interface.
 
 # AUTHOR
 Romain CYRILLE

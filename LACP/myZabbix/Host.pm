@@ -7,7 +7,7 @@ use myZabbix::Macro;
 has 'id' => (is => 'rw', required => 1);
 has 'name' => (is => 'rw', required => 1);
 has 'interfaceid' => (is => 'rw');
-has 'ip' => (is => 'rw', default => '');
+has 'ip' => (is => 'rw');
 has 'snmp_port' => (is => 'rw', default => 161);
 has 'items' => (is => 'rw',default => sub{[]});
 has 'triggers' => (is => 'rw', default => sub{[]});
@@ -96,9 +96,10 @@ sub retrieve_macros{
 }
 
 sub retrieve_snmp_interface{
-  @_ == 2 or croak "Bad number of arguments";
+  @_ > 2 or croak "Bad number of arguments";
   my $self = shift;
   my $zabbix_ref = shift;
+  my $create = shift;
 
   my $request = $zabbix_ref->do(
        'hostinterface.get',
@@ -115,6 +116,29 @@ sub retrieve_snmp_interface{
         $self->snmp_port( $interface->{port} ); 
         $self->interfaceid( $interface->{interfaceid} );
       }
+  }
+  #Create SNMP interface if not defined
+  if($create && !defined($self->ip)){
+    for my $interface (@$request){
+      # Get the IP from the main agent interface (type == 1) 
+      if ($interface->{type} == 1 and $interface->{main} == 1) {
+        $request = $zabbix_ref->do( 
+          'hostinterface.create',
+          {
+            hostid => $self->id,
+            dns => "",
+            ip => $interface->{ip},
+            main => 1,
+            port => 161,
+            type => 2,
+            useip => 1
+          }
+        );
+        $self->ip( $interface->{ip} );
+        $self->snmp_port( 161 ); 
+        $self->interfaceid(${$request->{interfaceids}}[0]  );
+      }
+    }
   }
 }
 
@@ -209,7 +233,8 @@ retrieve_snmp_interface()
 
   Retrieve the main SNMP interface of the host and save it in the interfaceid, ip and port attributes
   Params:
-    A reference to a initialized Zabbix::Tiny object used for requesting the Zabbix API
+    zabbix_ref  - A reference to a initialized Zabbix::Tiny object used for requesting the Zabbix API
+    create      - A boolean to allow SNMP interface creation
 
 get_macro_by_name()
 
