@@ -181,7 +181,7 @@ for my $host (@$hosts_ref){
 		#Retrieve a ping check trigger for dependencie
 		my $ping_trigger_id;
 		for my $trigger (@{$host->triggers}){
-			my $regex = qr/icmpping\./p;
+			my $regex = qr/icmpping(\.|\[)/p;
 			if($trigger->expression =~ /$regex/g){
 				$ping_trigger_id = $trigger->id;
 			}
