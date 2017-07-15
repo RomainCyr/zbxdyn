@@ -8,7 +8,7 @@ The script will retrieve the link aggregation configured on the switch with SNMP
 
 # PREREQUISITE
 
-The following module are needed: 
+The following modules are needed: 
 * Zabbix::Tiny
 * YAML::XS
 
