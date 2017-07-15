@@ -140,6 +140,11 @@ sub retrieve_snmp_interface{
       }
     }
   }
+  else{
+    $self->ip('');
+    $self->snmp_port( 161 ); 
+    $self->interfaceid(0);
+  }
 }
 
 sub get_macro_by_name{
