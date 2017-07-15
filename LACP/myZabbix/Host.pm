@@ -140,7 +140,7 @@ sub retrieve_snmp_interface{
       }
     }
   }
-  else{
+  elsif(!defined($self->ip)){
     $self->ip('');
     $self->snmp_port( 161 ); 
     $self->interfaceid(0);
