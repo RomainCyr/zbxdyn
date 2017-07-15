@@ -233,7 +233,7 @@ for my $host (@$hosts_ref){
 	}
 	else{
 		if(!$error){
-			print "Host '$host->{name}' has no aggregation configured\n"; 
+			print "Host '$host->{name}' has no aggregation configured\n" if($debug); 
 		}
 	}
 }
