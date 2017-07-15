@@ -5,7 +5,13 @@ zbxdynlacp.pl - Create dynamically Zabbix items and triggers for monitoring link
 This script will automatically create items and triggers on a Zabbix server to monitor link aggregation. The hosts on which the script will be run need to be in a specific Zabbix group. 
 
 The script will retrieve the link aggregation configured on the switch with SNMP requests.
-    
+
+# PREREQUISITE
+
+The following module are needed: 
+* Zabbix::Tiny
+* YAML::XS
+
 # ARGUMENTS
     -h --help
         Display the help message
