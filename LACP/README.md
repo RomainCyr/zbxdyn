@@ -19,7 +19,7 @@ The following modules are needed:
     -v --version
         Display the version message
 
-    -c
+    -p
         Path to the configuration file
 
     -s

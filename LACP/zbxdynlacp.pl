@@ -33,7 +33,7 @@ my $statistics;
 GetOptions(
 	'help|h' => \$help,
 	'version|v' => \$version,
-	'c=s' => \$configuration_file,
+	'p=s' => \$configuration_file,
 	's' => \$statistics,
 	'd' => \$debug
 )or die("Error in command line arguments\n");
@@ -48,7 +48,7 @@ if($help){
 	"Usage:\n\t$0 [-c <configuration_file>]\nOptions:
 	-h --help \t\tShow this Screen		
 	-v --version \tVersion of the scrip
-	-c \t\tPath to the configuration file
+	-p \t\tPath to the configuration file
 	-s \t\tShow statistics per host
 	-d \t\tDebug mode\n";
 	exit 0;
@@ -413,7 +413,7 @@ Display the help message
 
 Display the version message
 
-=item configuration file -c
+=item path configuration file -p
 
 Path to the configuration file
 
