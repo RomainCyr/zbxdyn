@@ -35,11 +35,16 @@ LACP_groups:
   - LACP_DYN
 ```
 
-# Usage
+# USAGE
+
+## Host Group
 The zabbix hosts on which the script will be run need to be in a group which name is in the configuration file. 
 
 For example, a LACP_DYN group can be created on the zabbix server and every host that need to be monitored will be in this group.
 
+If a host is remove from this group, the items and triggers automatically created by the script will be deleted.
+
+## Macros
 There are several macro that are needed for this script to run. It is not mandatory to define them as default values are defined: 
 * {$LACP_ITEM_DELAY}: the delay of the items created (60 by default)
 * {$PRIORITY_LACP_DOWN}: the priority of the trigger when the aggregation is down (5 by default)
@@ -49,6 +54,10 @@ There are several macro that are needed for this script to run. It is not mandat
 * {$SNMP_RETRIES}: the number of retries of the SNMP request (0 by default)
 
 These macros can be defined globaly in Administration > General > Macro, or per template or host (in the Macros tab)
+
+## Ping dependencie
+If the host have a ping check configured (with the Zabbix icmpping function) it will be add as a dependencie for the created triggers. Otherwise no dependencie will be set.
+
 
 # AUTHOR
 Romain CYRILLE
