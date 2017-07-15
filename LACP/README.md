@@ -7,19 +7,19 @@ This script will automatically create items and triggers on a Zabbix server to m
 The script will retrieve the link aggregation configured on the switch with SNMP requests.
     
 # ARGUMENTS
-    help -h --help
+    -h --help
         Display the help message
 
-    version -v --version
+    -v --version
         Display the version message
 
-    configuration file -c
+    -c
         Path to the configuration file
 
-    statistics -s
+    -s
         Display the statistics per host
 
-    debug -d
+    -d
         Display the debug messages
 
 # CONFIGURATION FILE
@@ -36,20 +36,20 @@ LACP_groups:
 ```
 
 # AUTHOR
-    Romain CYRILLE
+Romain CYRILLE
 
 # LICENSE
-    This file is part of zbxdynlacp.
+This file is part of zbxdynlacp.
 
-    Zbxdynlacp is free software: you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation, either version 3 of the License, or any later
-    version.
+Zbxdynlacp is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or any later
+version.
 
-    Zbxdynlacp is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-    Public License for more details.
+Zbxdynlacp is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with Zbxdynlacp. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along
+with Zbxdynlacp. If not, see <http://www.gnu.org/licenses/>.
