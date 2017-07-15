@@ -25,7 +25,7 @@ The script will retrieve the link aggregation configured on the switch with SNMP
 # CONFIGURATION FILE
 The configuration file is written in YAML. It should contains the Zabbix username and password for using the API as well a the url for requesting the API. It should also provided the groups of hosts on which the script will be runned.
 
-Here are a example of configuration file:
+Here are an example of a configuration file:
 ```
 ---
 zabbix_username: Admin
