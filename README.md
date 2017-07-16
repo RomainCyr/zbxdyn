@@ -22,7 +22,7 @@ The following modules are needed:
         Display the version message
 
     -p
-        Path to the configuration file
+        Path to the configuration file (by default /etc/zabbix/zbxdyn.conf)
 
     -c --create-interface
         Create SNMP interface if noexistent
