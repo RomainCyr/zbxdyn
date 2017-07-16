@@ -58,7 +58,7 @@ if($help){
 }
 
 if(!$configuration_file){
-	$configuration_file = '/etc/zabbix/auto_lacp.conf';
+	$configuration_file = '/etc/zabbix/zbxdyn.conf';
 	print "INFO Using default path for configuration file: $configuration_file\n" if($debug);
 }
 
