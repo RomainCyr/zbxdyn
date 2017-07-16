@@ -375,13 +375,13 @@ sub calculate_triggers_from_rings{
 
 =head1 NAME
 
-zbxdynlacp.pl - Create dynamically Zabbix items and triggers for monitoring link aggregations
+zbxdynrrpp.pl - Create dynamically Zabbix items and triggers for monitoring RRPP rins
 
 =head1 DESCRIPTION
 
-This script will automatically create items and triggers on a Zabbix server to monitor link aggregation.
+This script will automatically create items and triggers on a Zabbix server to monitor RRPP ring.
 The hosts on which the script will be runned need to be in a specific Zabbix group.
-The script will retrieve the link aggregation configured on the switch with SNMP requests.
+The script will retrieve the ring aggregation configured on the switch with SNMP requests.
 
 =head1 ARGUMENTS
 
@@ -425,8 +425,8 @@ Here are a example of configuration file:
 	zabbix_username: Admin
 	zabbix_password: zabbix
 	zabbix_url: http://192.168.0.100/zabbix/api_jsonrpc.php
-	LACP_groups:
-  	- LACP_DYN
+	RRPP_groups:
+  	- RRPP_DYN
 
 
 =head1 AUTHOR
@@ -437,17 +437,17 @@ Romain CYRILLE
 
 This file is part of zbxdynlacp.
 
-Zbxdynlacp is free software: you can redistribute it and/or modify
+Zbxdyn is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 any later version.
 
-Zbxdynlacp is distributed in the hope that it will be useful,
+Zbxdyn is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Zbxdynlacp.  If not, see <http://www.gnu.org/licenses/>.
+along with Zbxdyn.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

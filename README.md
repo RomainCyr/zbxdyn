@@ -1,10 +1,12 @@
 # NAME
-zbxdynlacp.pl - Create dynamically Zabbix items and triggers for monitoring link aggregations
+zbxdynlacp.pl - Create dynamically Zabbix items and triggers for monitoring link aggregations.
+
+zbxdynrrpp.pl - Create dynamically Zabbix items and triggers for monitoring RRPP rings.
 
 # DESCRIPTION
-This script will automatically create items and triggers on a Zabbix server to monitor link aggregation. The hosts on which the script will be run need to be in a specific Zabbix group. 
+These scripts will automatically create items and triggers on a Zabbix server to monitor link aggregation or RRPP rings. The hosts on which the scripts will be run need to be in specific Zabbix groups. 
 
-The script will retrieve the link aggregation configured on the switch with SNMP requests.
+The scripts will retrieve the link aggregations or the RRPP rings configured on the switch with SNMP requests.
 
 # PREREQUISITE
 
@@ -42,6 +44,8 @@ zabbix_password: zabbix
 zabbix_url: http://192.168.0.100/zabbix/api_jsonrpc.php
 LACP_groups:
   - LACP_DYN
+RRPP_groups:
+  - RRPP_DYN
 ```
 
 # USAGE
@@ -49,18 +53,25 @@ LACP_groups:
 ## Host Group
 The zabbix hosts on which the script will be run need to be in a group which name is in the configuration file. 
 
-For example, a LACP_DYN group can be created on the zabbix server and every host that need to be monitored will be in this group.
+For example, a LACP_DYN group can be created on the zabbix server and every host that need its aggregations to be monitored will be in this group.
 
 If a host is remove from this group, the items and triggers automatically created by the script will be deleted.
 
 ## Macros
-There are several macro that are needed for this script to run. It is not mandatory to define them as default values are defined: 
-* {$LACP_ITEM_DELAY}: the delay of the items created (60 by default)
-* {$PRIORITY_LACP_DOWN}: the priority of the trigger when the aggregation is down (5 by default)
-* {$PRIORITY_LACP_PARTIALLY_DOWN}: the priority of the trigger when the aggregation is partially down (2 by default)
+There are several macro that are needed for the script to run. It is not mandatory to define them as default values are defined: 
+Global:
 * {$SNMP_COMMUNITY}: the SNMP community of the switch ('public' by default)
 * {$SNMP_TIMEOUT}: the timeout of the SNMP request in second (5 by default)
 * {$SNMP_RETRIES}: the number of retries of the SNMP request (0 by default)
+
+For LACP:
+* {$LACP_ITEM_DELAY}: the delay of the items created (60 by default)
+* {$PRIORITY_LACP_DOWN}: the priority of the trigger when the aggregation is down (5 by default)
+* {$PRIORITY_LACP_PARTIALLY_DOWN}: the priority of the trigger when the aggregation is partially down (2 by default)
+
+For RRPP:
+* {$RRPP_ITEM_DELAY}: the delay of the items created (60 by default)
+* {$PRIORITY_RRPP_OPEN}: the priority of the trigger when the ring is open (2 by default)
 
 These macros can be defined globaly in Administration > General > Macro, or per template or host (in the Macros tab)
 
@@ -74,17 +85,19 @@ If no SNMP interface is defined on the host you can create it from the agent int
 Romain CYRILLE
 
 # LICENSE
+
 This file is part of zbxdynlacp.
 
-Zbxdynlacp is free software: you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or any later
-version.
+Zbxdyn is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
 
-Zbxdynlacp is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-Public License for more details.
+Zbxdyn is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
-with Zbxdynlacp. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Zbxdyn.  If not, see <http://www.gnu.org/licenses/>.
+
