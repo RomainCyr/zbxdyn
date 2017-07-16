@@ -6,7 +6,7 @@ use Zabbix::Tiny;
 use Getopt::Long qw(GetOptions);
 Getopt::Long::Configure qw(gnu_getopt);
 use YAML::XS qw(LoadFile);
-use Utils::HPSNMP qw(HP_get_switch_aggregations);
+use Utils::HPSNMP qw(HP_get_switch_rings);
 use myZabbix::Operations qw(get_hosts_in_groups);
 use vars qw($VERSION);
 $VERSION = 0.1;
@@ -235,11 +235,11 @@ for my $host (@$hosts_ref){
 	}
 	else{
 		if(!$error){
-			print "Host '$host->{name}' has no aggregation configured\n" if($debug); 
+			print "Host '$host->{name}' has no rings configured\n" if($debug); 
 		}
 	}
 }
-#Delete [Auto LACP] item link to hosts not in the @RRPP_groups
+#Delete [Auto RRPP] item link to hosts not in the @RRPP_groups
 my $request = $zabbix->do(
 	'item.get',
 	{
