@@ -34,24 +34,24 @@ sub get_hosts_in_groups{
 	for my $group (@$request){
 		push @group_ids, $group->{groupid};
 	}
-	if(length (@groupids) == 0){
-		return undef;
-	}
-	$request = $zabbix_ref->do(
-	    'host.get',
-	    {
-	        output    => [qw(hostid host)],
-	        groupids => @group_ids,
-	    }
-	);
+	if(@group_ids){
+		$request = $zabbix_ref->do(
+		    'host.get',
+		    {
+		        output    => [qw(hostid host)],
+		        groupids => @group_ids,
+		    }
+		);
 
-	my @hosts;
-	for my $host (@$request){
-	 	  push @hosts, myZabbix::Host->new(id => $host->{hostid}, name => $host->{host}) ;
+		my @hosts;
+		for my $host (@$request){
+		 	  push @hosts, myZabbix::Host->new(id => $host->{hostid}, name => $host->{host}) ;
+		}
+		return \@hosts;
 	}
-
-	return \@hosts;
+	return undef;
 }
+
 
 
 =pod 
