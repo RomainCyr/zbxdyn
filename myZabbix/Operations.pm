@@ -34,7 +34,9 @@ sub get_hosts_in_groups{
 	for my $group (@$request){
 		push @group_ids, $group->{groupid};
 	}
-
+	if(length (@groupids) == 0){
+		return undef;
+	}
 	$request = $zabbix_ref->do(
 	    'host.get',
 	    {

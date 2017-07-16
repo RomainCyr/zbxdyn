@@ -239,6 +239,7 @@ for my $host (@$hosts_ref){
 		}
 	}
 }
+
 #Delete [Auto RRPP] item link to hosts not in the @RRPP_groups
 my $request = $zabbix->do(
 	'item.get',
