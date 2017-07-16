@@ -136,7 +136,7 @@ sub HP_get_switch_rings{
 	my @rings;
 	# Check if RRPP is enable on the switch
 	my $response = snmp_get(
-		hostname => $args{hostname},
+					hostname => $args{hostname},
 					port => $args{port},
 					community => $args{community},
 					oids => [OID_TABLE_RRPP_ENABLE],
@@ -183,7 +183,17 @@ sub HP_get_switch_rings{
 			my $primary_port_index = $primary_ports->{OID_TABLE_RRPP_RING_PRIMARY_PORT . ".$ring->{domain}" . ".$ring->{id}"};
 			if($primary_port_index){
 				$ring->primary_port_status_oid(OID_IF_OPER_STATUS . ".$primary_port_index");
-				$ring->primary_port_desc_oid(OID_IF_DESC . ".$primary_port_index");
+				my $oid_if_desc = OID_IF_DESC . ".$primary_port_index";
+				my $description = snmp_get(
+					hostname => $args{hostname},
+					port => $args{port},
+					community => $args{community},
+					oids => [$oid_if_desc],
+					version => 2,
+					retries => $args{retries},
+					timeout => $args{timeout}
+				);
+				$ring->primary_port_desc($description->{$oid_if_desc});
 			}
 		}
 
@@ -201,7 +211,17 @@ sub HP_get_switch_rings{
 			my $secondary_port_index = $secondary_ports->{OID_TABLE_RRPP_RING_SECONDARY_PORT . ".$ring->{domain}" . ".$ring->{id}"};
 			if($secondary_port_index){
 				$ring->secondary_port_status_oid(OID_IF_OPER_STATUS . ".$secondary_port_index");
-				$ring->secondary_port_desc_oid(OID_IF_DESC . ".$secondary_port_index");
+				my $oid_if_desc = OID_IF_DESC . ".$secondary_port_index";
+				my $description = snmp_get(
+					hostname => $args{hostname},
+					port => $args{port},
+					community => $args{community},
+					oids => [$oid_if_desc],
+					version => 2,
+					retries => $args{retries},
+					timeout => $args{timeout}
+				);
+				$ring->secondary_port_desc($description->{$oid_if_desc});
 			}
 		}
 

@@ -6,9 +6,9 @@ use warnings;
 has 'id' => (is=>'rw', required => 1);
 has 'domain' => (is=>'rw', required => 1);
 has 'primary_port_status_oid' => (is=>'rw');
-has 'primary_port_desc_oid' => (is=>'rw');
+has 'primary_port_desc' => (is=>'rw');
 has 'secondary_port_status_oid' => (is=> 'rw');
-has 'secondary_port_desc_oid' => (is=> 'rw');
+has 'secondary_port_desc' => (is=> 'rw');
 
 1;
 
@@ -42,7 +42,7 @@ The SNMP object for the status of the primary port
 
 =item primary_port_desc_oid
 
-The SNMP object for the description of the primary port
+The SNMP description of the primary port
 
 =item secondary_port_status_oid
 
@@ -50,7 +50,7 @@ The SNMP object for the status of the secondary port
 
 =item secondary_port_desc_oid
 
-The SNMP object for the description of the secondaryæ port
+The SNMP description of the secondary port
 
 =back
 

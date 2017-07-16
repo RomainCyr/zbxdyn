@@ -15,7 +15,7 @@ use Data::Dumper;
 
 use constant{
 	RRPP_ITEM_DELAY => 60,
-	PRIORITY_RRPP_OPEN => 5,
+	PRIORITY_RRPP_OPEN => 2,
 	SNMP_COMMUNITY => 'public',
 	SNMP_TIMEOUT =>5 ,
 	SNMP_RETRIES => 0
@@ -134,7 +134,7 @@ for my $host (@$hosts_ref){
 		my $created_triggers = 0;
 		my $updated_triggers = 0;
 
-		my $required_items = calculate_items_from_aggregations($host,$aggregation);
+		my $required_items = calculate_items_from_rings($host,$rings);
 		# Compare host calculated items with current item and create, update item as required
 		for my $required_item (@$required_items){
 			my $item_exist = 0;
@@ -163,7 +163,7 @@ for my $host (@$hosts_ref){
 		}
 		# Delete items not required
 		for my $item (@{$host->items}){
-			my $regex = qr/\[Auto LACP\]/p;
+			my $regex = qr/\[Auto RRPP\]/p;
 			if ($item->name =~ /$regex/g){
 				my $delete = 1;
 				for my $required_item (@$required_items){
@@ -192,7 +192,7 @@ for my $host (@$hosts_ref){
 			print "WARNING No ping check trigger defined on host $host->{name}, no ping dependencie will be set\n";
 		}
 
-		my $required_triggers = calculate_triggers_from_aggregations($host,$aggregation);
+		my $required_triggers = calculate_triggers_from_rings($host,$rings);
 		
 		# Compare host calculated trigger with current item and create, update item as required
 		for my $required_trigger (@$required_triggers){
@@ -239,14 +239,14 @@ for my $host (@$hosts_ref){
 		}
 	}
 }
-#Delete [Auto LACP] item link to hosts not in the @LACP_groups
+#Delete [Auto LACP] item link to hosts not in the @RRPP_groups
 my $request = $zabbix->do(
 	'item.get',
 	{
 		output =>[qw(itemid name hostid)],
 		search =>
 		{
-			name=> "[Auto LACP]*",
+			name=> "[Auto RRPP]*",
 		},
 		searchWildcardsEnabled => 'true'
 	}
@@ -270,29 +270,28 @@ for my $item (@$request){
 	}
 }
 
-sub calculate_items_from_aggregations{
+sub calculate_items_from_rings{
 	@_ == 2 or croak "Bad number of arguments";
 	my $host = shift;
-	my $aggregations = shift;
+	my $rings = shift;
 
 	my @items;
 
-	my $item_delay = $host->get_macro_by_name('{$LACP_ITEM_DELAY}');
+	my $item_delay = $host->get_macro_by_name('{$RRPP_ITEM_DELAY}');
 	if(!$item_delay){
-		print "WARNING No LACP item delay defined for host '$host->{name}' using default delay of 60 second\n" if($debug);
-		$item_delay = LACP_ITEM_DELAY;
+		print "WARNING No RRPP item delay defined for host '$host->{name}' using default delay of 60 second\n" if($debug);
+		$item_delay = RRPP_ITEM_DELAY;
 	}
 
 	my $snmp_community = $host->get_macro_by_name('{$SNMP_COMMUNITY}');
 	if(!$snmp_community){
 		$snmp_community = SNMP_COMMUNITY;
 	}
-	#Items need to be created for every interface of an aggregation
-	for my $aggregation (keys %$aggregations){
-		my %interface_oids = @{$aggregations->{$aggregation}->interface_oids};
-		for my $oid (keys %interface_oids){
-			my $aggregation_description = $aggregations->{$aggregation}->description;
-			my $item_name = "[Auto LACP] $interface_oids{$oid} Status ($aggregation_description)";
+	#Item are created for every ring
+	for my $ring ( @$rings){
+		if ($ring->primary_port_status_oid){
+			my $ring_description = "RRPP Ring $ring->{id} Domain $ring->{domain}";
+			my $item_name = "[Auto RRPP] $ring->{primary_port_desc} Status ($ring_description)";
 			my $item = myZabbix::Item->new(
 				id => 0,
 				interfaceid => $host->{interfaceid},
@@ -301,91 +300,71 @@ sub calculate_items_from_aggregations{
 				type => 4,
 				data_type=> 0,
 				value_type => 3,
-				key => $oid,
+				key => $ring->primary_port_status_oid,
 				delay => $item_delay,
 				snmp_community => $snmp_community,
-				snmp_oid => $oid,
+				snmp_oid => $ring->primary_port_status_oid,
 				);
 			push @items, $item; 
-		}   
+		}
+		if ($ring->secondary_port_status_oid){
+			my $ring_description = "RRPP Ring $ring->{id} Domain $ring->{domain}";
+			my $item_name = "[Auto RRPP] $ring->{secondary_port_desc} Status ($ring_description)";
+			my $item = myZabbix::Item->new(
+				id => 0,
+				interfaceid => $host->{interfaceid},
+				hostid => $host->{id},
+				name => $item_name,
+				type => 4,
+				data_type=> 0,
+				value_type => 3,
+				key => $ring->secondary_port_status_oid,
+				delay => $item_delay,
+				snmp_community => $snmp_community,
+				snmp_oid => $ring->secondary_port_status_oid,
+				);
+			push @items, $item; 
+		}
 	}
 	return \@items;
 }
 
 
-sub calculate_triggers_from_aggregations{
+sub calculate_triggers_from_rings{
 	@_ == 2 or croak "Bad number of arguments";
 	my $host = shift;
-	my $aggregations = shift;
+	my $rings = shift;
 
 	my @triggers;
 	my $host_name = $host->name;
 
-	my $priority_LACP_down = $host->get_macro_by_name('{$PRIORITY_LACP_DOWN}');
-	if(!defined($priority_LACP_down)){
-		print "WARNING No priority LACP down defined for host '$host->{name}' using default priority of 5 (Disaster)\n" if($debug);
-		$priority_LACP_down = PRIORITY_LACP_DOWN;
-	}
-	my $priority_LACP_partially_down = $host->get_macro_by_name('{$PRIORITY_LACP_PARTIALLY_DOWN}');
-	if(!defined($priority_LACP_partially_down)){
-		print "WARNING No priority LACP partially down defined for host '$host->{name}' using default priority of 2 (Warning)\n" if($debug);
-		$priority_LACP_partially_down = PRIORITY_LACP_PARTIALLY_DOWN;
+	my $priority_rrpp_open = $host->get_macro_by_name('{$PRIORITY_RRPP_OPEN}');
+	if(!defined($priority_rrpp_open)){
+		print "WARNING No priority RRPP open defined for host '$host->{name}' using default priority of 2 (Warning)\n" if($debug);
+		$priority_rrpp_open = PRIORITY_RRPP_OPEN;
 	}
 
-	for my $aggregation (keys %$aggregations){
-		my $trigger_expression_1 ;
-		my $trigger_expression_2 ;
-		my %interface_oids = @{$aggregations->{$aggregation}->interface_oids};
-
-		if (scalar(keys %interface_oids)>1){
-			for my $oid (sort keys %interface_oids){
-
-				if($trigger_expression_1 && $trigger_expression_2){
-					$trigger_expression_1 = $trigger_expression_1 . " or {$host_name:$oid.last(#1)}<>1";
-					$trigger_expression_2 = $trigger_expression_2 . " and {$host_name:$oid.last(#1)}<>1";
-				}
-				else{
-					$trigger_expression_1 = "{$host_name:$oid.last(#1)}<>1";
-					$trigger_expression_2 = $trigger_expression_1;
-				}
-			}
-
-			my $trigger_expression_degraded = "($trigger_expression_1) and not ($trigger_expression_2)";
-			my $trigger_expression_down = "$trigger_expression_2";
-			my $aggregation_description = $aggregations->{$aggregation}->description;
-			my $trigger_description_degraded = "[Auto LACP] ".$aggregation_description . " is partially down";
-			my $trigger_description_down = "[Auto LACP] ".$aggregation_description . " is down";
-			my $trigger_degraded= myZabbix::Trigger->new(
-				id => 0,
-				description => $trigger_description_degraded,
-				expression => $trigger_expression_degraded,
-				priority => $priority_LACP_partially_down
-				);
-			push @triggers, $trigger_degraded;
-
-			my $trigger_down = myZabbix::Trigger->new(
-				id => 0,
-				description => $trigger_description_down,
-				expression => $trigger_expression_down,
-				priority => $priority_LACP_down
-				);
-			push @triggers, $trigger_down;
+	for my $ring (@$rings){
+		my $trigger_description = "RRPP Ring $ring->{id} Domain $ring->{domain} is open";
+		my $trigger_expression;
+		if($ring->primary_port_status_oid && $ring->secondary_port_status_oid){
+			$trigger_expression = "{$host_name:$ring->{primary_port_status_oid}.last(#1)}<>1 and {$host_name:$ring->{secondary_port_status_oid}.last(#1)}<>1";
+		}
+		elsif($ring->primary_port_status_oid && !$ring->secondary_port_status_oid){
+			$trigger_expression = "{$host_name:$ring->{primary_port_status_oid}.last(#1)}<>1";
 		}
 		else{
-			for my $oid (keys %interface_oids){
-				my $trigger_expression_down = "{$host_name:$oid.last(#1)}<>1";
-				my $aggregation_description = $aggregations->{$aggregation}->description;
-				my $trigger_description_down = "[Auto LACP] ".$aggregation_description . " is down";
-				my $trigger_down = myZabbix::Trigger->new(
-					id => 0,
-					description => $trigger_description_down,
-					expression => $trigger_expression_down,
-					priority => $priority_LACP_down
-					);
-				push @triggers, $trigger_down;
-			}
+			$trigger_expression = "{$host_name:$ring->{secondary_port_status_oid}.last(#1)}<>1";
 		}
-	}
+		my $trigger = myZabbix::Trigger->new(
+			id => 0,
+			description => $trigger_description,
+			expression => $trigger_expression,
+			priority => $priority_rrpp_open
+			);
+		push @triggers, $trigger;
+
+		}
 	return \@triggers;
 }
 
