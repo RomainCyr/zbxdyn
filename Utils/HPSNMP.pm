@@ -11,8 +11,8 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 $VERSION     = 0.1;
 @ISA         = qw(Exporter);
 @EXPORT      = ();
-@EXPORT_OK   = qw(HP_get_switch_aggregations);
-%EXPORT_TAGS = (All=> [qw(&HP_get_switch_aggregations)]);
+@EXPORT_OK   = qw(HP_get_switch_aggregations HP_get_switch_rings);
+%EXPORT_TAGS = (All=> [qw(&HP_get_switch_aggregations &HP_get_switch_rings)]);
 
 
 use constant {
