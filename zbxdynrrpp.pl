@@ -9,7 +9,6 @@ use YAML::XS qw(LoadFile);
 use Utils::HPSNMP qw(HP_get_switch_rings);
 use myZabbix::Operations qw(get_hosts_in_groups);
 use vars qw($VERSION);
-use Data::Dumper;
 $VERSION = 0.1;
 
 use Data::Dumper;
@@ -97,7 +96,7 @@ for my $host (@$hosts_ref){
 		$snmp_community = SNMP_COMMUNITY;
 		print "WARNING No SNMP community defined for host '$host->{name}' using default community '$snmp_community'\n" if($debug);
 	}
-	print Dumper $host->macros;
+	
 	my $snmp_timeout = $host->get_macro_by_name('{$SNMP_TIMEOUT}');
 	if(!defined($snmp_timeout)){
 		$snmp_timeout = SNMP_TIMEOUT;
