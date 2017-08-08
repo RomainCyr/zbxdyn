@@ -79,8 +79,25 @@ sub retrieve_macros{
   my $request = $zabbix_ref->do(
       'usermacro.get',
       {
-        globalmacro => 'false',
+	globalmacro => 'true',
         hostids => [$self->id]
+      }
+  );
+
+  for my $macro_ref (@$request){
+    my $zabbix_macro = myZabbix::Macro->new(
+      id => $macro_ref->{hostmacroid},
+      macro => $macro_ref->{macro},
+      value => $macro_ref->{value},
+      is_global => 1
+      );
+    push @{$self->macros}, $zabbix_macro;
+  }
+
+  my $request = $zabbix_ref->do(
+      'usermacro.get',
+      {
+	hostids => [$self->id]
       }
   );
 
@@ -93,6 +110,7 @@ sub retrieve_macros{
       );
     push @{$self->macros}, $zabbix_macro;
   }
+
 }
 
 sub retrieve_snmp_interface{
@@ -151,14 +169,20 @@ sub get_macro_by_name{
   @_ == 2 or croak "Bad number of arguments";
   my $self = shift;
   my $macro_name = shift;
+  my $macro_found = 0;
+  my $ret = undef;
 
   for my $macro (@{$self->macros}){
-    if($macro->{macro} eq $macro_name){
-      return $macro->{value};
+    if($macro->{macro} eq $macro_name and !$macro->is_global){
+      $ret = $macro->{value};
       last;
     }
+    elsif($macro->{macro} eq $macro_name){
+     $macro_found = 1;
+     $ret= $macro->{value};
+    }
   }
-  return undef;
+  return $ret;
 }
 
 1;
